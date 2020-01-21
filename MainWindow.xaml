@@ -1,0 +1,217 @@
+﻿<Window x:Class="Palmer_Disposal___Management_System.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Palmer_Disposal___Management_System"
+        xmlns:commands="clr-namespace:Palmer_Disposal___Management_System.Commands"
+        mc:Ignorable="d"
+        Title="Palmer Disposal - Management Software" Height="800" Width="1600"
+        Closing="Application_Exit">
+
+    <!-- Shortcut Keys -->
+    <Window.CommandBindings>
+        <CommandBinding 
+            Command="{x:Static commands:Commands.Exit}"
+            Executed="Exit_Program"/>
+        <CommandBinding
+            Command="{x:Static commands:Commands.Save}"
+            Executed="Save_Program"/>
+        <CommandBinding
+            Command="{x:Static commands:Commands.Refresh}"
+            Executed="Refresh_List_Click"/>
+        <CommandBinding
+            Command="{x:Static commands:Commands.AddCustomer}"
+            Executed="Add_Customer_Click"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="F4" Modifiers="Alt" Command="{x:Static commands:Commands.Exit}"/>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{x:Static commands:Commands.Save}"/>
+        <KeyBinding Key="R" Modifiers="Ctrl" Command="{x:Static commands:Commands.Refresh}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{x:Static commands:Commands.AddCustomer}"/>
+    </Window.InputBindings>
+
+    <Grid x:Name="MainGrid">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="Black" Offset="1"/>
+                <GradientStop Color="White" Offset="0"/>
+                <GradientStop Color="#FF505050" Offset="0.148"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!--Main Program Layout Setup-->
+
+        <!-- Order of Definitions: Menu Bar, Search Bar, Customer Grid / Customer Data -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25px"/>
+            <RowDefinition Height="12*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Menu Bar -->
+        <Menu x:Name="MenuBar" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="25">
+            <MenuItem Header="File">
+                <MenuItem x:Name="SaveAll" Header="Save" Click="Save_Program"/>
+                <MenuItem x:Name="ExitProgram" Header="Exit" Click="ExitProgram_Checked"/>
+            </MenuItem>
+            <MenuItem Header="Customers">
+                <MenuItem x:Name="AddCustomer" Header="Add Customer" Click="Add_Customer_Click"/>
+                <MenuItem x:Name="RefreshList" Header="Refresh" Click="Refresh_List_Click"/>
+            </MenuItem>
+            <MenuItem Header="Themes">
+                <MenuItem x:Name="MenuWhiteTheme" Header="White" Click="WhiteTheme_Click"/>
+                <MenuItem x:Name="MenuBlackTheme" Header="Black" Click="BlackTheme_Click"/>
+                <MenuItem x:Name="MenuBlackGradient" Header="Black Gradient" Click="BlackGradient_Click"/>
+                <MenuItem x:Name="MenuFunTheme" Header="Fun" Click="FunTheme_Click"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem x:Name="About" Header="About" Click="About_Program_Event"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Inner Customer Data Grid-->
+        <Grid Grid.Row="2" Margin="0,15,0,0">
+
+            <!-- Order of Definitions: Customer DataGrid, Individual Customer Data-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+
+            </Grid.ColumnDefinitions>
+
+            <!-- Customer Data Grid -->
+            <Grid Grid.Column="0" Margin="25,25,25,25">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="10*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Search Bar -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label x:Name="SearchLabel" Grid.Column="0" Content="Search: " FontSize="22" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+                    <TextBox x:Name="SearchBar" Grid.Column="1" HorizontalAlignment="Stretch" Text="" TextWrapping="NoWrap" VerticalAlignment="Stretch" Margin="10,10,10,10" TextAlignment="Center" MaxLines="1" FontSize="18" KeyDown="SearchBar_KeyDown"/>
+                    <Button x:Name="SearchButton" Grid.Column="2" Content="Search" Margin="10,10,10,10" Click="SearchButton_Click"/>
+                </Grid>
+
+                <local:CustomerBlock x:Name="HeaderBlock" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Height="50" Background="#FF6B6B6B"/>
+                
+                <!-- Scroll List -->
+                <ScrollViewer x:Name="CustomerScroll" Grid.Row="2" Initialized="ScrollViewer_Initialized">
+                    <Grid x:Name="CustomerGrid">
+
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Individual Customer Data-->
+            <Grid x:Name="RightPanel" Grid.Column="1" Background="#FF232323" Margin="25,25,25,25" >
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="10,10,0,10">
+                    <!-- Row Definitions in order: Title, Account Number, Name, Address, Town, Zip, Phone, Comment Payment History Button-->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="10*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="CI_L" Grid.Row="0" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Customer Information: " Foreground="White"/>
+
+                    <!-- Customer Info Input Area -->
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Account Number -->
+                        <Label x:Name="CI_AC_L" Grid.Column="0" Grid.Row="0" Content="Account Number:" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBox x:Name="CI_AccountNumber" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="0,10,10,10" MaxLines="1" MaxLength="6"/>
+
+                        <!-- Name -->
+                        <Label x:Name="CI_N_L" Grid.Column="0" Grid.Row="1" Content="Name:" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBox x:Name="CI_Name" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="0,10,10,10" MaxLines="1"  MaxLength="256"/>
+
+                        <!-- Address -->
+                        <Label x:Name="CI_A_L" Grid.Column="0" Grid.Row="2" Content="Address:" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBox x:Name="CI_Address" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="0,10,10,10" MaxLines="1"  MaxLength="256"/>
+
+                        <!-- Phone -->
+                        <Label x:Name="CI_P_L" Grid.Column="0" Grid.Row="3" Content="Phone:" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBox x:Name="CI_Phone" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Stretch" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="0,10,10,10" MaxLines="1"  MaxLength="256"/>
+
+                        <!-- Town -->
+                        <Label x:Name="CI_T_L" Grid.Column="0" Grid.Row="4" Content="Town:" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBox x:Name="CI_Town" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Stretch" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="0,10,10,10" MaxLines="1"  MaxLength="256"/>
+                        
+                        <!-- Comment -->
+                        <Label x:Name="CI_C_L" Grid.Column="0" Grid.Row="5" Content="Comment:" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBox x:Name="CI_Comment" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Stretch" Text="" TextWrapping="Wrap" VerticalAlignment="Stretch" Margin="0,10,10,10" MaxLines="1"  MaxLength="256"/>
+
+                    </Grid>
+
+                </Grid>
+
+                <!-- Edit Payment Information Grid -->
+                <Grid Grid.Row="1" Margin="10,10,0,10">
+
+                    <!-- Row Definitions in order: Title, Account Number, Name, Address, Town, Zip, Phone, Comment Payment History Button-->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="10*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="selected_customer_name" Grid.Row="0" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Payment History: " Foreground="White"/>
+
+                    <!-- Payment History Grid -->
+                    <DataGrid Grid.Row="1" x:Name="Selected_Payment_History"
+                                AutoGenerateColumns="True" 
+                                Margin="10,0,10,0"
+                                AlternatingRowBackground="#d9d9d9" 
+                                AutoGeneratedColumns="Selected_Payment_History_AutoGeneratedColumns" Background="#FF3E3E3E"
+                        >
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem x:Name="PaymentGridAddRow" Header="Add Row" Click="PaymentGridAddRow_Click"/>
+                                <MenuItem x:Name="PaymentGridDeleteRow" Header="Delete Row" Click="PaymentGridDeleteRow_Click"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu> 
+                    </DataGrid>
+                </Grid>
+
+
+                <!-- Current User Buttons -->
+                <Grid Grid.Row="2">
+                    <!-- Apply Changes Button -->
+                    <Button Grid.Row="2" x:Name="Apply_Changes" Content="Save Changes" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,10,10,10" Width="175" Click="Apply_Changes_Click"/>
+
+                    <!-- Delete User Button -->
+                    <Button Grid.Row="2" x:Name="Selected_Delete_User" Content="Delete Customer" HorizontalAlignment="Right" Click="Selected_Delete_User_Click" VerticalAlignment="Stretch" Margin="10,10,10,10" Width="175"/>
+                </Grid>
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</Window>
