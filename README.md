@@ -1,4 +1,4 @@
-# Palmer-Disposal - Management-System
+# Palmer Disposal - Management System
 Management Program for Palmer Disposal
 
 This software was created to serve as Freeware for the **Palmer Disposal** company to use for organizing their customer data and payment history.
