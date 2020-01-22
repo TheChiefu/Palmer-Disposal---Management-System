@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-/*using System.Security.Cryptography;
-using System.Text;*/
 using Data.Types;
 using Palmer_Disposal___Management_System;
 
@@ -64,12 +62,19 @@ namespace Data
                     }
 
                     //Encrypt Data
-                    //customerData[i] = Encrypt(temp);
                     customerData[i] = temp;
                 }
 
                 //Write customer data to file
                 File.WriteAllLines(path, customerData);
+
+
+                // WIP - Encryption
+/*                using (AesManaged aes = new AesManaged())
+                {
+                    byte[] encrypted = EncryptStringToBytes_Aes(File.ReadAllText(path), aes.Key, aes.IV);
+                    File.WriteAllBytes(path, encrypted);
+                }*/
 
                 //Only display confirm box when explicily told
                 if (confirmBox) System.Windows.MessageBox.Show("Saved Customer Data to " + path, "Saved", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
@@ -93,9 +98,16 @@ namespace Data
                     //Create temp list of customers from file
                     List<Customer> loadedCustomers = new List<Customer>();
 
+                    
+                    //WIP - Decryption
+/*                    string decrypted = null;
+                    using(AesManaged aes = new AesManaged())
+                    {
+                        decrypted = DecryptStringFromBytes_Aes(File.ReadAllBytes(path), aes.Key, aes.IV);
+                    }*/
+
                     //Get each line as indepenent strings
-                    //string[] lines = File.ReadAllLines(path);
-                    string[] lines = Decrypt(path);
+                    string[] lines = File.ReadAllLines(path);
 
                     //From lines (each customer) split sub-section of data to further parts
                     for (int i = 0; i < lines.Length; i++)
@@ -201,50 +213,90 @@ namespace Data
         }
 
 
-        //Encryption
-
-        public static void Encrypt(string Path, string key)
+        //Encryption -- Ref: https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.aesmanaged?redirectedfrom=MSDN&view=netframework-4.8
+        private static byte[] EncryptStringToBytes_Aes(string plainText, byte[] Key, byte[] IV)
         {
-            string content = File.ReadAllText(Path);
-            string output = null;
+            if(plainText == null || plainText.Length <= 0)
+                throw new ArgumentNullException("No Text");
+            if(Key == null || Key.Length <= 0)
+                throw new ArgumentNullException("No Key Given");
+            if(IV == null || IV.Length <= 0)
+                throw new ArgumentNullException("No IV Given");
 
-            for (int i = 0; i < content.Length - 1; i++)
+            byte[] encrypted;
+
+            //Create an AES Managed Object
+            using(AesManaged aes = new AesManaged())
             {
-                output += (char)content[i] ^ 2;
+                aes.Key = Key;
+                aes.IV = IV;
+
+                //Create an encryptor to perform the stream transform
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                //Create the streams used for encryption
+                using(MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using(CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using(StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            //Write all data to the stream
+                            swEncrypt.Write(plainText);
+                        }
+
+                        encrypted = msEncrypt.ToArray();
+                    }
+                }
             }
 
-            File.WriteAllText(Path, output);
+            return encrypted;
         }
 
-        //Decrypts line by line
-        // WIP
-        public static string[] Decrypt(string Path)
+        private static string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] Key, byte[] IV)
         {
-            string[] content = File.ReadAllLines(Path);
-            string[] output = new string[content.Length];
+            // Check arguments.
+            if (cipherText == null || cipherText.Length <= 0)
+                throw new ArgumentNullException("No Text");
+            if (Key == null || Key.Length <= 0)
+                throw new ArgumentNullException("No Key Given");
+            if (IV == null || IV.Length <= 0)
+                throw new ArgumentNullException("No IV Given");
 
-            //Line total
-            for(int i = 0; i < content.Length; i++)
+            // Declare the string used to hold
+            // the decrypted text.
+            string plaintext = null;
+
+            // Create an AesManaged object
+            // with the specified key and IV.
+            using (AesManaged aesAlg = new AesManaged())
             {
-                string temp = "";
+                aesAlg.Key = Key;
+                aesAlg.IV = IV;
 
-                //Line length in char
-                for (int j = 0; j < content[i].Length; j++)
+                // Create a decryptor to perform the stream transform.
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                // Create the streams used for decryption.
+                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
                 {
-                    temp += (char)Math.Sqrt(content[i][j]);
-                    Debug.WriteLine((char)Math.Sqrt(content[i][j]));
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+
+                            // Read the decrypted bytes from the decrypting stream
+                            // and place them in a string.
+                            plaintext = srDecrypt.ReadToEnd();
+                        }
+                    }
                 }
 
-                output[i] = temp;
-
-
-                Debug.WriteLine(temp);
-                //System.Windows.MessageBox.Show(temp, "Line " + i, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
 
-            for (int i = 0; i < content.Length; i++) Debug.WriteLine(output[i]);
+            System.Windows.MessageBox.Show(plaintext);
 
-            return output;
+            return plaintext;
         }
     }
 }

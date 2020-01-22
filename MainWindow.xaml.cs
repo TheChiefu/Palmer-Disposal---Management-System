@@ -295,7 +295,7 @@ namespace Palmer_Disposal___Management_System
             //Save user prefs
             Processing.SavePrefs(savePrefsPath, themeIndex);
 
-            Processing.Encrypt(savePath, "test");
+            //Processing.Encrypt(savePath, "test");
         }
 
         private void RefreshScrollList(List<Customer> listCustomers)
