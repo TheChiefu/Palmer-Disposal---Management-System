@@ -10,3 +10,5 @@ I wanted each customer data information to be relevant to the datatype, but per 
 Warning: This program saves customer data in **PLAIN TEXT**, encryption is not implemented into this program yet since it was created in a few days to get to the client as soon as possible.
 
 This served as a personal project and learning experience, so it is not up to enterprise level of quality.
+
+![Program Example](https://i.imgur.com/52Bp70b.jpg)
