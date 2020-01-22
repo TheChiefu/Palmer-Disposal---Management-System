@@ -12,7 +12,6 @@ I wanted each customer data information to be relevant to the datatype, but per 
 This served as a personal project and learning experience, so it is not up to enterprise level of quality.
 
 Download Portable Executable: [Windows 10 64-Bit](https://drive.google.com/open?id=1CbAEY4IplDDHxoaBZWQGZnPuIByZuK6Z)
-
 _Creates a **data.epd** & **prefs.data file**_
 
 ![Program Example](https://i.imgur.com/52Bp70b.jpg)
